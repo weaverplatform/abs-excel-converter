@@ -1,4 +1,4 @@
-package test;
+package com.weaverplatform.absexcelconverter.test;
 
 import org.junit.BeforeClass;
 

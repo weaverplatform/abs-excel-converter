@@ -1,13 +1,20 @@
 package com.weaverplatform.absexcelconverter;
 
-import com.weaverplatform.absexcelconverter.controllers.ApplicationController;
-import com.weaverplatform.absexcelconverter.util.CORS;
-import com.weaverplatform.absexcelconverter.util.Props;
-import com.weaverplatform.absexcelconverter.util.WeaverError;
+import static spark.Spark.awaitInitialization;
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.threadPool;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static spark.Spark.*;
+import com.weaverplatform.absexcelconverter.controllers.ApplicationController;
+import com.weaverplatform.absexcelconverter.controllers.FileController;
+import com.weaverplatform.absexcelconverter.util.CORS;
+import com.weaverplatform.absexcelconverter.util.Props;
+import com.weaverplatform.absexcelconverter.util.WeaverError;
 
 /**
  * The main Application class in which all processes are bootstrapped and
@@ -41,6 +48,8 @@ public class Application {
     get("/",                  ApplicationController.about);
     get("/about",             ApplicationController.about);
     get("/connection",        ApplicationController.connection);
+    
+    post("/upload",           FileController.upload);
     
     get("*",                  ApplicationController.notFound);
 
