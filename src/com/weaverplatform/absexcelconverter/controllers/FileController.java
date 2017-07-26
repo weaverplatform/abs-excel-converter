@@ -1,5 +1,9 @@
 package com.weaverplatform.absexcelconverter.controllers;
 
+import com.weaverplatform.absexcelconverter.util.File;
+import com.weaverplatform.absexcelconverter.util.WriteOperationParser;
+import com.weaverplatform.absexcelconverter.util.model.Workbook;
+
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -12,9 +16,12 @@ import spark.Route;
 public class FileController {
 
 	/**
-	 * Upload route to upload excel files to process.
+	 * Upload route to upload excel files to convert into Weaver
+	 * WriteOperations.
 	 */
 	public static Route upload = (Request req, Response res) -> {
-	  return "";
+	  Workbook workbook = new Workbook(File.get(req, false));
+	  WriteOperationParser.parse(workbook);
+	  return "OK";
 	};
 }
