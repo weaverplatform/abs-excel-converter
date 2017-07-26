@@ -39,6 +39,10 @@ public class Application {
 
     // Route registration and mapping
     get("/",                  ApplicationController.about);
+    get("/about",             ApplicationController.about);
+    get("/connection",        ApplicationController.connection);
+    
+    get("*",                  ApplicationController.notFound);
 
     // Wait for server initialization
     awaitInitialization();
