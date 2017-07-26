@@ -1,0 +1,14 @@
+/.project
+/.idea
+/target/
+*.iml
+.DS_Store
+src/test/resources/commits
+/.settings
+~$*.xlsx
+
+# Eclipse files
+.classpath
+
+bin/
+/bin/
