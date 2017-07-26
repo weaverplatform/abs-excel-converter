@@ -13,7 +13,9 @@ To use this product you'll have these routes at your disposal:
 
 ##### `[GET] / `
 ***Returns***
+
 Basic product information.
+
 ***Example***
 ```
 {
