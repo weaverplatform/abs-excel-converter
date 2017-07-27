@@ -1,8 +1,8 @@
 package com.weaverplatform.absexcelconverter.controllers;
 
 import com.weaverplatform.absexcelconverter.util.File;
-import com.weaverplatform.absexcelconverter.util.WriteOperationParser;
-import com.weaverplatform.absexcelconverter.util.model.Workbook;
+import com.weaverplatform.absexcelconverter.util.wo.WriteOperationParser;
+import com.weaverplatform.absexcelconverter.util.workbook.Workbook;
 
 import spark.Request;
 import spark.Response;
