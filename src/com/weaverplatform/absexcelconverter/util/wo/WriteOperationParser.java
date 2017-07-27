@@ -1,5 +1,8 @@
 package com.weaverplatform.absexcelconverter.util.wo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.weaverplatform.absexcelconverter.util.workbook.Workbook;
 import com.weaverplatform.absexcelconverter.util.workbook.model.ABSExcel;
 import com.weaverplatform.absexcelconverter.util.workbook.model.ABSExcel.ABSColumn;
@@ -26,14 +29,20 @@ public class WriteOperationParser {
   public synchronized static WriteOperation[] parse(Workbook workbook) {
     try {
       ABSExcel excel = workbook.read();
+      List<WriteOperation> operations = new ArrayList<WriteOperation>();
+      for(String objectNaam : excel.getValues(ABSColumn.OBJECTNAAM, true)) {
+        operations.add(createNodeOperation(objectNaam));
+      }
       
-      String[] val1 = excel.getValues(ABSColumn.OBJECTNAAM, false);
-      String[] val2 = excel.getValues(ABSColumn.OBJECTNAAM, true);
-      System.out.println(excel.getValue(ABSColumn.OBJECTNAAM, 2));
+      return operations.toArray(new WriteOperation[] {});
     } catch (WeaverError we) {
       // Rethrow the error
       throw we;
     }
+  }
+  
+  private static WriteOperation createNodeOperation(String value) {
+    // TODO: for tomorrow...
     return null;
   }
 }
