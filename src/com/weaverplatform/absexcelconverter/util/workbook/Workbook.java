@@ -14,7 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.weaverplatform.absexcelconverter.util.workbook.model.ABSExcel;
-import com.weaverplatform.absexcelconverter.util.workbook.model.ABSExcel.ABSRow;
+import com.weaverplatform.absexcelconverter.util.workbook.model.ABSExcel.ABSColumn;
 import com.weaverplatform.protocol.WeaverError;
 
 /**
@@ -39,10 +39,10 @@ public class Workbook extends XSSFWorkbook implements Validator {
     // And just check if the first row (the header data)
     // corresponds with the ABSExcel model enum. Iff that
     // is true we will return true.
-    for(int i = 0; i < ABSRow.values().length; i++) {
+    for(int i = 0; i < ABSColumn.values().length; i++) {
       String columnName = data[0][i].replaceAll("[- ]+", "").toUpperCase();
       // If we have a mismatch somewhere, return false.
-      if(!columnName.equals(ABSRow.values()[i].toString())) {
+      if(!columnName.equals(ABSColumn.values()[i].toString())) {
         return false;
       }
     }
@@ -84,17 +84,5 @@ public class Workbook extends XSSFWorkbook implements Validator {
       data.add(cells.toArray(new String[] {}));
     }
     return data.toArray(new String[][] {});
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    for (String[] row : raw()) {
-      for (String str : row) {
-        sb.append(str + "--");
-      }
-      sb.append("\n");
-    }
-    return sb.toString();
   }
 }
