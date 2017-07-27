@@ -42,12 +42,19 @@ An array containing one or more Weaver WriteOperations in JSON format.
 ***Example***
 ```
 [{
-    "name": "${project.artifactId}",
-    "version": "${project.version}",
-    "source": "https://github.com/weaverplatform/abs-excel-converter"
+	<WriteOperation JSON's>
 }, ... ]
 ```
 
-*Http [500]*
+*Http [400]*
 
-When a server error occured.
+When a bad request occured, an invalid ABS Excel sheet was provided. (see the issue
+a valid and an invalid example of ABS Excel sheet structures, not the header column).
+
+***Example***
+```
+{
+	"code": 333,
+	"message": "Invalid ABS Excel structure."
+}
+```

@@ -18,6 +18,4 @@ public class WriteOperationParser {
     }
     return null;
   }
-  // determine is the supplied excel sheet is
-  // todo parse writeoperations in this class based on a valid
 }
