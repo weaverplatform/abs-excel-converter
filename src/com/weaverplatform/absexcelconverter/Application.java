@@ -60,7 +60,6 @@ public class Application {
     exception(WeaverError.class, (e, request, response) -> {
       response.status(400);
       response.body(e.toJson());
-      System.out.println(e.toJson());
     });
 
     // Catch all other exceptions

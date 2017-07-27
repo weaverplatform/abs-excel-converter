@@ -14,39 +14,53 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.weaverplatform.absexcelconverter.util.workbook.model.ABSExcel;
+import com.weaverplatform.absexcelconverter.util.workbook.model.ABSExcel.ABSRow;
+import com.weaverplatform.protocol.WeaverError;
 
 /**
- * Custom Workbook object especially designed to work with ABS
- * Excel sheets. This object has not been optimized for large
- * Excel sheets (the raw() method from the
- * Validator is ran more than once). Please use cautious, or see
- * the author for more information.
+ * Custom Workbook object especially designed to work with ABS Excel sheets.
+ * This object has not been optimized for large Excel sheets (the raw() method
+ * from the Validator is ran more than once). Please use cautious, or see the
+ * author for more information.
+ * 
  * @author alex
  *
  */
 public class Workbook extends XSSFWorkbook implements Validator {
-    
+
   public Workbook(Part file) throws IOException {
     super(file.getInputStream());
   }
-  
+
   @Override
   public boolean check() {
+    // Get the raw data
+    String[][] data = raw();
+    // And just check if the first row (the header data)
+    // corresponds with the ABSExcel model enum. Iff that
+    // is true we will return true.
+    for(int i = 0; i < ABSRow.values().length; i++) {
+      String columnName = data[0][i].replaceAll("[- ]+", "").toUpperCase();
+      // If we have a mismatch somewhere, return false.
+      if(!columnName.equals(ABSRow.values()[i].toString())) {
+        return false;
+      }
+    }
     return true;
   }
-  
+
   @Override
-  public ABSExcel read() throws NullPointerException {
-    if(check()) {
+  public ABSExcel read() throws WeaverError {
+    if (check()) {
       return new ABSExcel(raw());
     }
-    return null;
+    throw new WeaverError(WeaverError.DATATYPE_UNSUPPORTED, "Invalid ABS Excel structure.");
   }
-  
+
   @Override
   public String[][] raw() {
     List<String[]> data = new ArrayList<String[]>();
-    Sheet datatypeSheet = (Sheet)getSheetAt(0);
+    Sheet datatypeSheet = (Sheet) getSheetAt(0);
     // This decides the length of each and every row following it
     int lengthOfRowOne = datatypeSheet.getRow(0).getLastCellNum();
     Iterator<Row> iterator = datatypeSheet.iterator();
@@ -71,12 +85,12 @@ public class Workbook extends XSSFWorkbook implements Validator {
     }
     return data.toArray(new String[][] {});
   }
-  
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    for(String[] row : raw()) {
-      for(String str : row) {
+    for (String[] row : raw()) {
+      for (String str : row) {
         sb.append(str + "--");
       }
       sb.append("\n");

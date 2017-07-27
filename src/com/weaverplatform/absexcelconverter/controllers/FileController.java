@@ -15,13 +15,12 @@ import spark.Route;
  */
 public class FileController {
 
-	/**
-	 * Upload route to upload excel files to convert into Weaver
-	 * WriteOperations.
-	 */
-	public static Route upload = (Request req, Response res) -> {
-	  Workbook workbook = new Workbook(File.get(req, false));
-	  WriteOperationParser.parse(workbook);
-	  return "OK";
-	};
+  /**
+   * Upload route to upload excel files to convert into Weaver WriteOperations.
+   */
+  public static Route upload = (Request req, Response res) -> {
+    Workbook workbook = new Workbook(File.get(req, false));
+    WriteOperationParser.parse(workbook);
+    return "OK";
+  };
 }
