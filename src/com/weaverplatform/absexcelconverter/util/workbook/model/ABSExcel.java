@@ -8,12 +8,12 @@ import java.util.List;
  * methods and enumarations to iterate over the provided data.
  * 
  * An ABSExcel sheet fundamentally is a two dimensional table with a header row.
- * In this table data is stored to generate Weaver WriteOperation. This object should
- * be used like prepared statements are used. For example if you want to retrieve row 2
- * from the sheet. You get row 2 (ignoring the zeroth row, which is the header row).
- * To make this example more concrete, consider the attachment in this issue: 
- * http://jira.sysunite.com/browse/RC-77, to get row 2 counting from Import-ID's, you
- * call getRow(2);.
+ * In this table data is stored to generate Weaver WriteOperation. This object
+ * should be used like prepared statements are used. For example if you want to
+ * retrieve row 2 from the sheet, you call getRow(1), ignoring the zeroth row,
+ * which is the header row. To make this example more concrete, consider the
+ * attachment in this issue: http://jira.sysunite.com/browse/RC-77, to get row 2
+ * counting from Import-ID's, you call getRow(1);.
  * 
  * @author alex
  *
@@ -31,14 +31,14 @@ public class ABSExcel {
   }
 
   /**
-   * Selects and returns the wanted row.
+   * Selects and returns the requested row.
    * 
    * @param row
    *          which row to return.
-   * @return a String array containing all the columns.
+   * @return an ABSRow containing all the data from the selected row.
    */
-  public String[] getRow(int row) {
-    return rows[row];
+  public ABSRow getRow(int row) {
+    return new ABSRow(rows[row + 1]);
   }
 
   /**
@@ -53,12 +53,15 @@ public class ABSExcel {
 
   /**
    * Retrieves a single value from an intersection in this Excel sheet.
-   * @param type the y-value of the intersection.
-   * @param row the x-value of the intersection.
+   * 
+   * @param type
+   *          the y-value of the intersection.
+   * @param row
+   *          the x-value of the intersection.
    * @return data that is stored in that particular cell in this ABSExcel sheet.
    */
   public String getValue(ABSColumn type, int row) {
-    return rows[row][type.ordinal()];
+    return rows[row + 1][type.ordinal()];
   }
 
   /**
@@ -80,13 +83,11 @@ public class ABSExcel {
     // We do add an empty value tho for this header field,
     // but only if filter is not set.
     // This way we stay true to it's design principle.
-    if(!filter)
+    if (!filter)
       data.add("");
-    // We start i at 1, we skip over the header row.
-    // So we make sure to also add one to the total row count.
-    for (int i = 1; i < getRowCount() + 1; i++) {
+    for (int i = 0; i < getRowCount(); i++) {
       String value = getValue(where, i);
-      if(filter && value.isEmpty()) {
+      if (filter && value.isEmpty()) {
         continue;
       }
       data.add(value);
@@ -104,6 +105,39 @@ public class ABSExcel {
       sb.append("\n");
     }
     return sb.toString();
+  }
+
+  /**
+   * Small inner class to replace String[] type for rows in an ABSExcel.
+   * 
+   * @author alex
+   *
+   */
+  public class ABSRow {
+    private String[] row;
+
+    public ABSRow(String[] row) {
+      this.row = row;
+    }
+
+    /**
+     * Retrieve a value from a column in this row.
+     * 
+     * @param column
+     * @return
+     */
+    public String getValue(ABSColumn column) {
+      return row[column.ordinal()];
+    }
+
+    /**
+     * Helper method to quickly identify this rows import id.
+     * 
+     * @return
+     */
+    public int getImportId() {
+      return Integer.parseInt(getValue(ABSColumn.IMPORTID));
+    }
   }
 
 }
