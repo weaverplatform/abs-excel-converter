@@ -20,7 +20,6 @@ public class FileController {
    */
   public static Route upload = (Request req, Response res) -> {
     Workbook workbook = new Workbook(File.get(req, false));
-    WriteOperationParser.parse(workbook);
-    return "OK";
+    return WriteOperationParser.parseArray(workbook);
   };
 }
