@@ -67,7 +67,9 @@ public class WriteOperationParser {
           // Otherwise we'll retrieve the sourceId from the other pwo.
         }
       }
-
+      
+      //TODO: implement all the lines above with comments and no code
+      
       // for (String objectName : excel.getValues(ABSColumn.OBJECTNAAM, true)) {
       // String sourceId = uuid();
       // operations.add(createNodeOperation(sourceId));
@@ -113,6 +115,7 @@ public class WriteOperationParser {
     return array.toString();
   }
 
+  //TODO: see where these methods should go
   private static WriteOperation createNodeOperation(String value) {
     return new CreateNodeOperation(DEFAULT_USERNAME, value);
   }
@@ -134,7 +137,8 @@ public class WriteOperationParser {
    */
   public static class PreparedWriteOperation implements Dependency {
 
-    private String sourceId = UUID.randomUUID().toString();
+    private String nodeId = UUID.randomUUID().toString();
+    private String sourceId = "";
     private ABSRow row;
 
     public PreparedWriteOperation(ABSRow row) {
@@ -158,8 +162,8 @@ public class WriteOperationParser {
       this.sourceId = sourceId;
     }
 
-    public String getSourceId() {
-      return sourceId;
+    public String getNodeId() {
+      return nodeId;
     }
 
     public WriteOperation[] toWriteOperations() {
