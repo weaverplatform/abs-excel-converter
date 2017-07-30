@@ -24,10 +24,18 @@ public class ABSExcel {
     IMPORTID, OBJECTNAAM, OTLTYPEID, IMPORTIDPARENTABS, OCMSIDPARENTABS, SBSID, OBJECTSTATUS, STATUSX
   }
 
-  private String[][] rows;
+  private String[][] rawRows;
+  private List<ABSRow> rows = new ArrayList<ABSRow>();
 
-  public ABSExcel(String[][] rows) {
-    this.rows = rows;
+  public ABSExcel(String[][] rawRows) {
+    this.rawRows = rawRows;
+    // Let's try and convert all the String[] into ABSRow's, then check
+    // if they are valid, and if so we add them to the array.
+    for (String[] rawRow : rawRows) {
+      ABSRow absRow = new ABSRow(rawRow);
+      if (absRow.isValid())
+        rows.add(absRow);
+    }
   }
 
   /**
@@ -38,7 +46,7 @@ public class ABSExcel {
    * @return an ABSRow containing all the data from the selected row.
    */
   public ABSRow getRow(int row) {
-    return new ABSRow(rows[row + 1]);
+    return rows.get(row);
   }
 
   /**
@@ -48,7 +56,7 @@ public class ABSExcel {
    * @return the total number of rows of data.
    */
   public int getRowCount() {
-    return rows.length - 1;
+    return rows.size();
   }
 
   /**
@@ -61,7 +69,7 @@ public class ABSExcel {
    * @return data that is stored in that particular cell in this ABSExcel sheet.
    */
   public String getValue(ABSColumn type, int row) {
-    return rows[row + 1][type.ordinal()];
+    return rawRows[row][type.ordinal()];
   }
 
   /**
@@ -98,7 +106,7 @@ public class ABSExcel {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    for (String[] row : rows) {
+    for (String[] row : rawRows) {
       for (String str : row) {
         sb.append(str + "--");
       }
@@ -137,6 +145,26 @@ public class ABSExcel {
      */
     public int getImportId() {
       return Integer.parseInt(getValue(ABSColumn.IMPORTID));
+    }
+
+    /**
+     * Checks if this ABSRow is a valid one. A valid row is one where the following
+     * columns are set: ImportID, Objectnaam, OTL type ID, Objectstatus and Status
+     * x, and ImportID is a number.
+     * 
+     * @return true if the ABSRow is valid, false otherwise.
+     */
+    public boolean isValid() {
+      try {
+        // Try to get the ImportID, if it fails (when text is entered) a
+        // NumberFormatException is thrown.
+        getImportId();
+        return !getValue(ABSColumn.IMPORTID).isEmpty() && !getValue(ABSColumn.OBJECTNAAM).isEmpty()
+            && !getValue(ABSColumn.OTLTYPEID).isEmpty() && !getValue(ABSColumn.OBJECTSTATUS).isEmpty()
+            && !getValue(ABSColumn.STATUSX).isEmpty();
+      } catch (NumberFormatException nfe) {
+        return false;
+      }
     }
   }
 

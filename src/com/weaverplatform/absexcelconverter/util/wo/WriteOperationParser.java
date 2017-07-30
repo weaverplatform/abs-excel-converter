@@ -52,7 +52,6 @@ public class WriteOperationParser {
       // A map to keep track of all created PreparedWriteOperations
       // Sorted on their ImportID integers.
       Map<Integer, PreparedWriteOperation> pwos = new HashMap<Integer, PreparedWriteOperation>();
-
       // Loop through all the rows in the ABSExcel document.
       for (int i = 0; i < excel.getRowCount(); i++) {
         // And create an PreparedWriteOperation for it, this way we will generate
@@ -68,8 +67,13 @@ public class WriteOperationParser {
           // Otherwise we'll retrieve the nodeId from the mentioned pwo.
           switch (pwo.getDependantType()) {
           case IMPORTIDPARENTABS:
-            @SuppressWarnings("unlikely-arg-type")
-            String nodeIdFromParent = pwos.get(pwo.getDependantId()).getNodeId();
+            //String testdebug = pwo.getDependantId();
+            //PreparedWriteOperation pwodebug = pwos.get(Integer.parseInt(pwo.getDependantId()));
+            
+            // In this particular case we are sure (bcuz of the switch) that the
+            // getDependantId() will return an Integer wrapped in a String object
+            // So we parse it to an Integer.
+            String nodeIdFromParent = pwos.get(Integer.parseInt(pwo.getDependantId())).getNodeId();
             pwo.setTargetId(nodeIdFromParent);
             break;
           case OCMSIDPARENTABS:
@@ -123,7 +127,7 @@ public class WriteOperationParser {
    */
   public static class PreparedWriteOperation implements Dependency {
 
-    private String nodeId = generateUUID();
+    private String nodeId;
     /**
      * This targetId is a hint for this PreparedWriteOperation to indicate it is a
      * dependancy on another node. So when this targetId is set, we actually create
@@ -134,6 +138,7 @@ public class WriteOperationParser {
 
     public PreparedWriteOperation(ABSRow row) {
       this.row = row;
+      this.nodeId = generateUUID();
     }
 
     /**

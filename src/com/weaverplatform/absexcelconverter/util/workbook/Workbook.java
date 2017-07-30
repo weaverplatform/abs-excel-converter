@@ -77,7 +77,7 @@ public class Workbook extends XSSFWorkbook implements Validator {
           if (currentCell.getCellTypeEnum() == CellType.STRING) {
             cells.add(currentCell.getStringCellValue());
           } else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
-            cells.add("" + currentCell.getNumericCellValue());
+            cells.add("" + ((Double)currentCell.getNumericCellValue()).intValue());
           }
         }
       }
