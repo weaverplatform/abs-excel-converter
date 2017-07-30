@@ -51,7 +51,7 @@ public class WriteOperationParser {
       List<WriteOperation> operations = new ArrayList<WriteOperation>();
       // A map to keep track of all created PreparedWriteOperations
       // Sorted on their ImportID integers.
-      Map<Integer, PreparedWriteOperation> pwos = new HashMap<Integer, PreparedWriteOperation>();
+      Map<Integer, PreparedWriteOperation> pwos = new HashMap<Integer, PreparedWriteOperation>();      
       // Loop through all the rows in the ABSExcel document.
       for (int i = 0; i < excel.getRowCount(); i++) {
         // And create an PreparedWriteOperation for it, this way we will generate
