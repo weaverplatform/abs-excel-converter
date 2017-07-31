@@ -13,7 +13,7 @@ import java.util.List;
  * retrieve row 2 from the sheet, you call getRow(1), ignoring the zeroth row,
  * which is the header row. To make this example more concrete, consider the
  * attachment in this issue: http://jira.sysunite.com/browse/RC-77, to get row 2
- * counting from Import-ID's, you call getRow(1);.
+ * counting from Import-ID's, you call getRow(1).
  * 
  * @author alex
  *
@@ -149,19 +149,22 @@ public class ABSExcel {
 
     /**
      * Checks if this ABSRow is a valid one. A valid row is one where the following
-     * columns are set: ImportID, Objectnaam, OTL type ID, Objectstatus and Status
-     * x, and ImportID is a number.
+     * columns are set: ImportID (and is a number), Objectnaam, OTL type ID,
+     * Objectstatus and Status x, and ImportID parent ABS && OCMSId parent ABS
+     * aren't both set at the same time.
      * 
      * @return true if the ABSRow is valid, false otherwise.
      */
     public boolean isValid() {
       try {
         // Try to get the ImportID, if it fails (when text is entered) a
-        // NumberFormatException is thrown.
+        // NumberFormatException is thrown. This happens in the case of the
+        // header column and wrongly entered data in the excel sheet.
         getImportId();
         return !getValue(ABSColumn.IMPORTID).isEmpty() && !getValue(ABSColumn.OBJECTNAAM).isEmpty()
             && !getValue(ABSColumn.OTLTYPEID).isEmpty() && !getValue(ABSColumn.OBJECTSTATUS).isEmpty()
-            && !getValue(ABSColumn.STATUSX).isEmpty();
+            && !getValue(ABSColumn.STATUSX).isEmpty()
+            && !(!getValue(ABSColumn.IMPORTIDPARENTABS).isEmpty() && !getValue(ABSColumn.OCMSIDPARENTABS).isEmpty());
       } catch (NumberFormatException nfe) {
         return false;
       }

@@ -52,7 +52,7 @@ public class WriteOperationParser {
       // A map to keep track of all created PreparedWriteOperations
       // Sorted on their ImportID integers.
       Map<Integer, PreparedWriteOperation> pwos = new HashMap<Integer, PreparedWriteOperation>();      
-      // Loop through all the rows in the ABSExcel document.
+      // Loop through all the rows in the ABSExcel document.      
       for (int i = 0; i < excel.getRowCount(); i++) {
         // And create an PreparedWriteOperation for it, this way we will generate
         // UUIDs for it and we can use these later for dependent rows.
@@ -67,9 +67,10 @@ public class WriteOperationParser {
           // Otherwise we'll retrieve the nodeId from the mentioned pwo.
           switch (pwo.getDependantType()) {
           case IMPORTIDPARENTABS:
-            //String testdebug = pwo.getDependantId();
-            //PreparedWriteOperation pwodebug = pwos.get(Integer.parseInt(pwo.getDependantId()));
-            
+            // Check if the dependant pwo exists in the pwos collection. If not
+            // we will throw a WeaverError stating that a 'syntax' error occured.
+            if (!pwos.containsKey(Integer.parseInt(pwo.getDependantId())))
+              throw new WeaverError(345, "Invalid PreparedWriteOperation. Check ImportID: " + pwo.getImportId() + " for syntax errors.");
             // In this particular case we are sure (bcuz of the switch) that the
             // getDependantId() will return an Integer wrapped in a String object
             // So we parse it to an Integer.
