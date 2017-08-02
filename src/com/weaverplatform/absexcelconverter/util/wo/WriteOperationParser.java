@@ -72,17 +72,17 @@ public class WriteOperationParser {
             // So we parse it to an Integer.
             int dependantId = Integer.parseInt(pwo.getDependantId());
             // Check if the dependant pwo exists in the pwos collection. If not
-            // we will throw a WeaverError stating that a 'syntax' error occured.
+            // we will throw a WeaverError stating that a error occured.
             if (!pwos.containsKey(dependantId))
               throw new WeaverError(345,
                   "Invalid PreparedWriteOperation. Check ImportID: " + pwo.getImportId() + " for errors.");
             String nodeIdFromParent = pwos.get(dependantId).getNodeId();
-            pwo.setTargetId(nodeIdFromParent);
+            pwo.setTarget(nodeIdFromParent, pwos.get(dependantId).getRow().getValue(ABSColumn.OTLTYPEID));
             break;
           case OCMSIDPARENTABS:
             // This is just a CMDB (other name for OCMS) target id, no need for lookup, just
             // set it.
-            pwo.setTargetId(pwo.getDependantId());
+            pwo.setTarget(pwo.getDependantId());
             break;
           }
         }
@@ -139,6 +139,7 @@ public class WriteOperationParser {
      * a relation to this other node with a keyname otl:hasPart.
      */
     private String targetId;
+    private String targetOtlType;
     private ABSRow row;
 
     public PreparedWriteOperation(ABSRow row) {
@@ -163,7 +164,28 @@ public class WriteOperationParser {
       return nodeId;
     }
 
-    public void setTargetId(String targetId) {
+    /**
+     * Use this method in order to indicate a relation between ImportID's in the
+     * excel sheet.
+     * 
+     * @param targetId
+     *          id from the node from the target.
+     * @param targetOtlType
+     *          the otl type id belonging to this target.
+     */
+    public void setTarget(String targetId, String targetOtlType) {
+      this.targetId = targetId;
+      this.targetOtlType = targetOtlType;
+    }
+
+    /**
+     * Use this method in order to indicate a relation between an ImportId and an
+     * OCMS parent.
+     * 
+     * @param targetId
+     *          the id from the target in the OCMS scheme.
+     */
+    public void setTarget(String targetId) {
       this.targetId = targetId;
     }
 
@@ -175,7 +197,7 @@ public class WriteOperationParser {
      * 2nd: It creates three attributes, named: hasName, objectStatus, statusX. <br>
      * 3rd: Create one or two relations, named: rdf:type, hasSBS (optional). <br>
      * 4th: Check if the inner targetId is set. If so: <br>
-     * 4a: Create an extra relation, named: otl:hasPart. <br>
+     * 4a: Create extra nodes and relations according to the OTL-standard. <br>
      * 4b: Otherwise don't create the extra relation. <br>
      * 5th: Return an array containing all these WriteOperations.
      * 
@@ -184,17 +206,40 @@ public class WriteOperationParser {
      */
     public WriteOperation[] toWriteOperations() {
       List<WriteOperation> operations = new ArrayList<WriteOperation>();
+      String otlTypeId = getRow().getValue(ABSColumn.OTLTYPEID);
       operations.add(createNodeOperation(nodeId));
       operations.add(createAttributeOperation(generateUUID(), nodeId, "hasName", getRow().getValue(ABSColumn.OBJECTNAAM)));
       operations.add(createAttributeOperation(generateUUID(), nodeId, "objectStatus", getRow().getValue(ABSColumn.OBJECTSTATUS)));
       operations.add(createAttributeOperation(generateUUID(), nodeId, "statusX", getRow().getValue(ABSColumn.STATUSX)));
-      operations.add(createRelationOperation(generateUUID(), nodeId, "rdf:type", getRow().getValue(ABSColumn.OTLTYPEID)));
+      operations.add(createRelationOperation(generateUUID(), nodeId, "rdf:type", otlTypeId));
       // The only optional field, check if it's set.
       if (!getRow().getValue(ABSColumn.SBSID).isEmpty())
         operations.add(createRelationOperation(generateUUID(), nodeId, "hasSBS", getRow().getValue(ABSColumn.SBSID)));
-      // Check if targetId is set.
-      if (targetId != null)
-        operations.add(createRelationOperation(generateUUID(), nodeId, "otl:hasPart", targetId));
+      // Check if targetId is set. That means it involves some special node
+      // creation/manipulation we want to comply to the OTL-standard. It
+      // involves creating a separate node (intermediate) which holds three relations.
+      // One to a new created node with an id gotten from the mini.json.
+      // One to the sourceId (this.nodeId) with key: otl:hasPart.
+      // One to the targetId with key: otl:hasAssembly.
+      if (targetId != null && targetOtlType != null) {
+        String intermediateNodeId = generateUUID();
+        // First create this intermediate node
+        operations.add(createNodeOperation(intermediateNodeId));
+        // Create the two relation between the intermediate node and the
+        // sourceId and targetId.
+        operations.add(createRelationOperation(generateUUID(), intermediateNodeId, "otl:hasAssembly", targetId));
+        operations.add(createRelationOperation(generateUUID(), intermediateNodeId, "otl:hasPart", nodeId));
+        // Then create another node with the ID which originates from the
+        // mini.json in the resources folder.
+        String nodeIdFromAggregations = AggregationResolver.getInstance().lookup(otlTypeId, targetOtlType);
+        operations.add(createNodeOperation(nodeIdFromAggregations));
+        // Finally create the relation between this intermediate node and
+        // this just created node above.
+        operations.add(createRelationOperation(generateUUID(), intermediateNodeId, "rdf:type", nodeIdFromAggregations));
+      } else if(targetId != null && targetOtlType == null) {
+        // This case happens when the OCMSid parent was set and not the ImportId parent ABS
+        operations.add(createRelationOperation(generateUUID(), nodeId, "TODO:name_this_relation", targetId));
+      }
       return operations.toArray(new WriteOperation[] {});
     }
 
