@@ -51,8 +51,8 @@ public class WriteOperationParser {
       List<WriteOperation> operations = new ArrayList<WriteOperation>();
       // A map to keep track of all created PreparedWriteOperations
       // Sorted on their ImportID integers.
-      Map<Integer, PreparedWriteOperation> pwos = new HashMap<Integer, PreparedWriteOperation>();      
-      // Loop through all the rows in the ABSExcel document.      
+      Map<Integer, PreparedWriteOperation> pwos = new HashMap<Integer, PreparedWriteOperation>();
+      // Loop through all the rows in the ABSExcel document.
       for (int i = 0; i < excel.getRowCount(); i++) {
         // And create an PreparedWriteOperation for it, this way we will generate
         // UUIDs for it and we can use these later for dependent rows.
@@ -67,22 +67,26 @@ public class WriteOperationParser {
           // Otherwise we'll retrieve the nodeId from the mentioned pwo.
           switch (pwo.getDependantType()) {
           case IMPORTIDPARENTABS:
-            // Check if the dependant pwo exists in the pwos collection. If not
-            // we will throw a WeaverError stating that a 'syntax' error occured.
-            if (!pwos.containsKey(Integer.parseInt(pwo.getDependantId())))
-              throw new WeaverError(345, "Invalid PreparedWriteOperation. Check ImportID: " + pwo.getImportId() + " for syntax errors.");
             // In this particular case we are sure (bcuz of the switch) that the
             // getDependantId() will return an Integer wrapped in a String object
             // So we parse it to an Integer.
-            String nodeIdFromParent = pwos.get(Integer.parseInt(pwo.getDependantId())).getNodeId();
+            int dependantId = Integer.parseInt(pwo.getDependantId());
+            // Check if the dependant pwo exists in the pwos collection. If not
+            // we will throw a WeaverError stating that a 'syntax' error occured.
+            if (!pwos.containsKey(dependantId))
+              throw new WeaverError(345,
+                  "Invalid PreparedWriteOperation. Check ImportID: " + pwo.getImportId() + " for errors.");
+            String nodeIdFromParent = pwos.get(dependantId).getNodeId();
             pwo.setTargetId(nodeIdFromParent);
             break;
           case OCMSIDPARENTABS:
+            // This is just a CMDB (other name for OCMS) target id, no need for lookup, just
+            // set it.
             pwo.setTargetId(pwo.getDependantId());
             break;
           }
         }
-        // After this we generate the WO from the pro and insert them into the
+        // After this we generate the WO's from the pwo and insert them into the
         // operations list.
         for (WriteOperation wo : pwo.toWriteOperations()) {
           operations.add(wo);
@@ -186,10 +190,10 @@ public class WriteOperationParser {
       operations.add(createAttributeOperation(generateUUID(), nodeId, "statusX", getRow().getValue(ABSColumn.STATUSX)));
       operations.add(createRelationOperation(generateUUID(), nodeId, "rdf:type", getRow().getValue(ABSColumn.OTLTYPEID)));
       // The only optional field, check if it's set.
-      if(!getRow().getValue(ABSColumn.SBSID).isEmpty())
+      if (!getRow().getValue(ABSColumn.SBSID).isEmpty())
         operations.add(createRelationOperation(generateUUID(), nodeId, "hasSBS", getRow().getValue(ABSColumn.SBSID)));
       // Check if targetId is set.
-      if(targetId != null)
+      if (targetId != null)
         operations.add(createRelationOperation(generateUUID(), nodeId, "otl:hasPart", targetId));
       return operations.toArray(new WriteOperation[] {});
     }
@@ -205,7 +209,7 @@ public class WriteOperationParser {
     private WriteOperation createRelationOperation(String uuid, String sourceId, String key, String targetId) {
       return new CreateRelationOperation(DEFAULT_USERNAME, uuid, sourceId, key, targetId);
     }
-    
+
     private String generateUUID() {
       return UUID.randomUUID().toString();
     }
