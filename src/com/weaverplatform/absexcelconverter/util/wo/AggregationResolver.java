@@ -57,7 +57,7 @@ public class AggregationResolver {
    * @return a String containing the aggregation id of the relation.
    */
   public synchronized String lookup(String sourceId, String targetId) {
-    return retrieveAggregationId(sourceId, targetId).get(2).toString();
+    return retrieveAggregationId(sourceId, targetId).get(2).toString().replaceAll("\"", "");
   }
 
   /**

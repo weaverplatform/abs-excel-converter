@@ -238,7 +238,12 @@ public class WriteOperationParser {
         operations.add(createRelationOperation(generateUUID(), intermediateNodeId, "rdf:type", nodeIdFromAggregations));
       } else if(targetId != null && targetOtlType == null) {
         // This case happens when the OCMSid parent was set and not the ImportId parent ABS
-        operations.add(createRelationOperation(generateUUID(), nodeId, "TODO:name_this_relation", targetId));
+        operations.add(createRelationOperation(generateUUID(), nodeId, "TODO", targetId));
+        // TODO: this type of parent relation eventually will also get the same implementation of
+        // the ImportID parent ABS implementation (see above), only I need to get another .csv file
+        // in which the mapping from this OCMSID parent ABS to the aggregation id is.
+        // TODO: make such a intermediate node as above and stuff...
+        // TODO: give the same key names as above implementation
       }
       return operations.toArray(new WriteOperation[] {});
     }
