@@ -220,17 +220,8 @@ public class WriteOperationParser {
       // One to a new created node with an id gotten from the mini.json.
       // One to the sourceId (this.nodeId) with key: otl:hasPart.
       // One to the targetId with key: otl:hasAssembly.
-      if (targetId != null && targetOtlType != null) {
-        operations.addAll(createIntermediateNode(true));
-      } else if(targetId != null && targetOtlType == null) {
-        // This case happens when the OCMSid parent was set and not the ImportId parent ABS
-        operations.addAll(createIntermediateNode(false));
-        // TODO: this type of parent relation eventually will also get the same implementation of
-        // the ImportID parent ABS implementation (see above), only I need to get another .csv file
-        // in which the mapping from this OCMSID parent ABS to the aggregation id is.
-        // this should make the this if else if statement collapse because the parameter of the
-        // createIntermediateNode() will be gone and there should nog longer be a distinction
-        // between to two, just one check remains to see wheter one of these fields is set.
+      if (targetId != null) {
+        operations.addAll(createIntermediateNode());
       }
       return operations.toArray(new WriteOperation[] {});
     }
@@ -238,10 +229,9 @@ public class WriteOperationParser {
     /**
      * Sets up an intermediate node with three relations, two between it's sourceId and targetId
      * and a final one between an extra created node with an aggregation id.
-     * @param isImportIdParent set an indication whether or not to create the aggregation id node.
      * @return an array containing the intermediate node setup.
      */
-    private List<WriteOperation> createIntermediateNode(boolean isImportIdParent) {
+    private List<WriteOperation> createIntermediateNode() {
       List<WriteOperation> operations = new ArrayList<WriteOperation>();
       String intermediateNodeId = generateUUID();
       String otlTypeId = getRow().getValue(ABSColumn.OTLTYPEID);
@@ -251,10 +241,21 @@ public class WriteOperationParser {
       // sourceId and targetId.
       operations.add(createRelationOperation(generateUUID(), intermediateNodeId, "otl:hasAssembly", targetId));
       operations.add(createRelationOperation(generateUUID(), intermediateNodeId, "otl:hasPart", nodeId));
-      // Then create another node with the ID which originates from the
-      // mini.json in the resources folder.
-      if(isImportIdParent) {
+      // Check if the targetOtlType is set (which only happens in the case
+      // of ImportId parent ABS relations)
+      if(targetOtlType != null) {
+        // Then create another node with the ID which originates from the
+        // mini.json in the resources folder.
         String nodeIdFromAggregations = AggregationResolver.getInstance().lookup(otlTypeId, targetOtlType);
+        operations.add(createNodeOperation(nodeIdFromAggregations));
+        // Finally create the relation between this intermediate node and
+        // this just created node above.
+        operations.add(createRelationOperation(generateUUID(), intermediateNodeId, "rdf:type", nodeIdFromAggregations));
+      } else {
+        // If the relation is from type OCMSId parent ABS we end up in
+        // this else block and have to do another lookup in a different
+        // csv file in order to get the aggregation id's.
+        String nodeIdFromAggregations = AggregationResolver.getInstance().lookupFromOCMS(getRow().getValue(ABSColumn.OCMSIDPARENTABS), otlTypeId);
         operations.add(createNodeOperation(nodeIdFromAggregations));
         // Finally create the relation between this intermediate node and
         // this just created node above.
