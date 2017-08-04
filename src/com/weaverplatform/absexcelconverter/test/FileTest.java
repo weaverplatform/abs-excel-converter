@@ -14,12 +14,12 @@ public class FileTest extends BaseTest {
   @Test
   public void uploadTest() throws URISyntaxException {
     
-    File file = new File(Resources.getResource("excel/abs_import_sheet(valid_1).xlsx").toURI());
+    File file = new File(Resources.getResource("excel/abs_import_sheet(invalid_3).xlsx").toURI());
     
     given()
       .multiPart(file)
       .expect()
-      .statusCode(200)
+      .statusCode(400)
       .when()
       .post("http://localhost:4567/upload");
 
@@ -28,12 +28,12 @@ public class FileTest extends BaseTest {
   @Test
   public void upload2Test() throws URISyntaxException {
     
-    File file = new File(Resources.getResource("excel/abs_import_sheet(valid_2).xlsx").toURI());
+    File file = new File(Resources.getResource("excel/abs_import_sheet(invalid_4).xlsx").toURI());
     
     given()
       .multiPart(file)
       .expect()
-      .statusCode(200)
+      .statusCode(400)
       .when()
       .post("http://localhost:4567/upload");
 
@@ -62,6 +62,20 @@ public class FileTest extends BaseTest {
       .multiPart(file)
       .expect()
       .statusCode(400)
+      .when()
+      .post("http://localhost:4567/upload");
+
+  }
+  
+  @Test
+  public void upload5Test() throws URISyntaxException {
+    
+    File file = new File(Resources.getResource("excel/abs_import_sheet(valid_1).xlsx").toURI());
+    
+    given()
+      .multiPart(file)
+      .expect()
+      .statusCode(200)
       .when()
       .post("http://localhost:4567/upload");
 
