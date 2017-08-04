@@ -60,8 +60,8 @@ public class AggregationResolver {
    * @param id the OCMSId.
    * @return a String containing the aggregation id of the relation.
    */
-  public synchronized String lookupFromOCMS(String id, String sourceOtlId) {
-    String targetId = retrieveOtlTypeId(sourceOtlId, id).get(2).toString().replaceAll("\"", "");
+  public synchronized String lookupFromOCMS(String sourceOtlId, String id) {
+    String targetId = retrieveOtlTypeId(id).get(1).toString().replaceAll("\"", "").replace("otl:", "");
     return lookup(sourceOtlId, targetId);
   }
 
@@ -83,16 +83,16 @@ public class AggregationResolver {
    * find the id matching the sourceId and targetId.
    * 
    * @param sourceId
-   *          the id of the right side of the relation.
-   * @param targetId
    *          the id of the left side of the relation.
+   * @param targetId
+   *          the id of the rigth side of the relation.
    * @return a JsonArray containing the following info: [0]: the left side
    *         (source)id, [1]: the right side (target)id, [2]: the aggregation is.
    */
   private JsonArray retrieveAggregationId(String sourceOtlId, String targetOtlId) {
     for (JsonElement element : aggregations) {
       JsonArray ele = element.getAsJsonArray();
-      if (ele.get(0).getAsString().equals("otl:" + targetOtlId) && ele.get(1).getAsString().equals("otl:" + sourceOtlId))
+      if (ele.get(0).getAsString().equals("otl:" + sourceOtlId) && ele.get(1).getAsString().equals("otl:" + targetOtlId))
         return ele;
     }
     throw new WeaverError(-1,
@@ -104,20 +104,20 @@ public class AggregationResolver {
    * find the id matching the sourceId and OCMSId.
    * 
    * @param sourceId
-   *          the id of the right side of the relation.
-   * @param targetId
    *          the id of the left side of the relation.
+   * @param targetId
+   *          the id of the right side of the relation.
    * @return a JsonArray containing the following info: [0]: the left side
    *         (source)id, [1]: the right side (target)id, [2]: the aggregation is.
    */
-  private JsonArray retrieveOtlTypeId(String sourceOtlId, String OCMSId) {
+  private JsonArray retrieveOtlTypeId(String OCMSId) {
     for (JsonElement element : mapping) {
       JsonArray ele = element.getAsJsonArray();
-      if (ele.get(0).getAsString().equals(OCMSId) && ele.get(1).getAsString().equals("otl:" + sourceOtlId))
+      if (ele.get(0).getAsString().equals(OCMSId))
         return ele;
     }
     throw new WeaverError(-1,
-        "No aggregation id found for this relation (source/ocms): " + sourceOtlId + " " + OCMSId);
+        "No otl type id found for this ocms: " + OCMSId);
   }
 
 }

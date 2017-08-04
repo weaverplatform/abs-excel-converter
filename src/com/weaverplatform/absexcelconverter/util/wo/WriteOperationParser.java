@@ -139,7 +139,7 @@ public class WriteOperationParser {
      * a relation to this other node with a keyname otl:hasPart.
      */
     private String targetId;
-    private String targetOtlType;
+    private String sourceOtlType;
     private ABSRow row;
 
     public PreparedWriteOperation(ABSRow row) {
@@ -173,9 +173,9 @@ public class WriteOperationParser {
      * @param targetOtlType
      *          the otl type id belonging to this target.
      */
-    public void setTarget(String targetId, String targetOtlType) {
+    public void setTarget(String targetId, String sourceOtlType) {
       this.targetId = targetId;
-      this.targetOtlType = targetOtlType;
+      this.sourceOtlType = sourceOtlType;
     }
 
     /**
@@ -243,10 +243,10 @@ public class WriteOperationParser {
       operations.add(createRelationOperation(generateUUID(), intermediateNodeId, "otl:hasPart", nodeId));
       // Check if the targetOtlType is set (which only happens in the case
       // of ImportId parent ABS relations)
-      if(targetOtlType != null) {
+      if(sourceOtlType != null) {
         // Then create another node with the ID which originates from the
         // mini.json in the resources folder.
-        String nodeIdFromAggregations = AggregationResolver.getInstance().lookup(otlTypeId, targetOtlType);
+        String nodeIdFromAggregations = AggregationResolver.getInstance().lookup(sourceOtlType, otlTypeId);
         operations.add(createNodeOperation(nodeIdFromAggregations));
         // Finally create the relation between this intermediate node and
         // this just created node above.
@@ -255,7 +255,7 @@ public class WriteOperationParser {
         // If the relation is from type OCMSId parent ABS we end up in
         // this else block and have to do another lookup in a different
         // csv file in order to get the aggregation id's.
-        String nodeIdFromAggregations = AggregationResolver.getInstance().lookupFromOCMS(getRow().getValue(ABSColumn.OCMSIDPARENTABS), otlTypeId);
+        String nodeIdFromAggregations = AggregationResolver.getInstance().lookupFromOCMS(otlTypeId, getRow().getValue(ABSColumn.OCMSIDPARENTABS));
         operations.add(createNodeOperation(nodeIdFromAggregations));
         // Finally create the relation between this intermediate node and
         // this just created node above.
