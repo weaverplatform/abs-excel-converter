@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker build -t sysunite/abs-excel-converter:0.0.1 .
+docker build -t sysunite/abs-excel-converter:0.0.2 .
