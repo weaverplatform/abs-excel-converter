@@ -207,21 +207,31 @@ public class WriteOperationParser {
     public WriteOperation[] toWriteOperations() {
       List<WriteOperation> operations = new ArrayList<WriteOperation>();
       operations.add(createNodeOperation(nodeId));
-      operations.add(createAttributeOperation(generateUUID(), nodeId, "hasName", getRow().getValue(ABSColumn.OBJECTNAAM)));
-      operations.add(createAttributeOperation(generateUUID(), nodeId, "objectStatus", getRow().getValue(ABSColumn.OBJECTSTATUS)));
-      operations.add(createAttributeOperation(generateUUID(), nodeId, "statusX", getRow().getValue(ABSColumn.STATUSX)));
-      operations.add(createRelationOperation(generateUUID(), nodeId, "rdf:type", getRow().getValue(ABSColumn.OTLTYPEID)));
-      // The only optional field, check if it's set.
+      // Create three mandatory relations to nodes which always exists
+      operations.add(createRelationOperation(generateUUID(), nodeId, "rdf:type", "Artefact"));
+      operations.add(createRelationOperation(generateUUID(), nodeId, "rdf:type", "ILSObject"));
+      operations.add(createRelationOperation(generateUUID(), nodeId, "rdf:type", "MaterializedPhysicalObject"));
+      
+      operations.add(createAttributeOperation(generateUUID(), nodeId, "hasNameByLiteral", getRow().getValue(ABSColumn.OBJECTNAAM)));
+      
+      // Optional column
+      if (!getRow().getValue(ABSColumn.OBJECTSTATUS).isEmpty())
+        operations.add(createAttributeOperation(generateUUID(), nodeId, "objectStatus", getRow().getValue(ABSColumn.OBJECTSTATUS)));
+      // Optional column
+      if (!getRow().getValue(ABSColumn.STATUSX).isEmpty())
+        operations.add(createAttributeOperation(generateUUID(), nodeId, "statusX", getRow().getValue(ABSColumn.STATUSX)));
+      
+      operations.add(createRelationOperation(generateUUID(), nodeId, "Artefact_isClassifiedAsByLibraryClass_ArtefactLibraryElementReference", getRow().getValue(ABSColumn.OTLTYPEID)));
+      
+      // Optional column
       if (!getRow().getValue(ABSColumn.SBSID).isEmpty())
-        operations.add(createRelationOperation(generateUUID(), nodeId, "hasSBS", getRow().getValue(ABSColumn.SBSID)));
-      // Check if targetId is set. That means it involves some special node
-      // creation/manipulation we want to comply to the OTL-standard. It
-      // involves creating a separate node (intermediate) which holds three relations.
-      // One to a new created node with an id gotten from the mini.json.
-      // One to the sourceId (this.nodeId) with key: otl:hasPart.
-      // One to the targetId with key: otl:hasAssembly.
+        operations.add(createRelationOperation(generateUUID(), nodeId, "isInstanceOf", getRow().getValue(ABSColumn.SBSID)));
+      // Check if targetId is set. If so we create the appropriate relation
+      // for it.
       if (targetId != null) {
-        operations.addAll(createIntermediateNode());
+        // This target -> source relation is here to replace the deprecated method createIntermediateNode()
+        // the origin is in the targetId.
+        operations.add(createRelationOperation(generateUUID(), targetId, "Artefact_consistsOf_Artefact", nodeId));
       }
       return operations.toArray(new WriteOperation[] {});
     }
@@ -231,6 +241,7 @@ public class WriteOperationParser {
      * and a final one between an extra created node with an aggregation id.
      * @return an array containing the intermediate node setup.
      */
+    @Deprecated
     private List<WriteOperation> createIntermediateNode() {
       List<WriteOperation> operations = new ArrayList<WriteOperation>();
       String intermediateNodeId = generateUUID();
