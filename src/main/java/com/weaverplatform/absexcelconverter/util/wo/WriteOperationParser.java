@@ -221,7 +221,8 @@ public class WriteOperationParser {
       if (!getRow().getValue(ABSColumn.STATUSX).isEmpty())
         operations.add(createAttributeOperation(generateUUID(), nodeId, "statusX", getRow().getValue(ABSColumn.STATUSX)));
       
-      operations.add(createRelationOperation(generateUUID(), nodeId, "Artefact_isClassifiedAsByLibraryClass_ArtefactLibraryElementReference", getRow().getValue(ABSColumn.OTLTYPEID)));
+      // Note: we prefix the OTL type with: 'otl:' to match records in the database
+      operations.add(createRelationOperation(generateUUID(), nodeId, "Artefact_isClassifiedAsByLibraryClass_ArtefactLibraryElementReference", "otl:" + getRow().getValue(ABSColumn.OTLTYPEID)));
       
       // Optional column
       if (!getRow().getValue(ABSColumn.SBSID).isEmpty())
