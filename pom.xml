@@ -2,8 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.weaverplatform</groupId>
-  <artifactId>weaver-database-postgresql</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <artifactId>abs-excel-converter</artifactId>
+  <version>0.0.1</version>
   <dependencies>
 
 	<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
@@ -17,7 +17,7 @@
     <dependency>
       <groupId>com.weaverplatform</groupId>
       <artifactId>sdk-java</artifactId>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.1</version>
     </dependency>
 
     <!-- Spark Webserver -->
@@ -100,11 +100,7 @@
     <!-- This will cause Maven to copy property files into the output classes and translate the resource during that copy, interpreting the property. -->
     <resources>
       <resource>
-        <directory>src/main/resources/queries</directory>
-        <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>src/main/resources/properties</directory>
+        <directory>src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
     </resources>
@@ -143,7 +139,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>com.weaverplatform.postgresql.Application</mainClass>
+              <mainClass>com.weaverplatform.absexcelconverter.Application</mainClass>
             </manifest>
           </archive>
         </configuration>
