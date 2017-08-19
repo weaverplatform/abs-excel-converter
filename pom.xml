@@ -3,7 +3,7 @@
 
   <groupId>com.weaverplatform</groupId>
   <artifactId>abs-excel-converter</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.3</version>
   <dependencies>
 
 	<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->

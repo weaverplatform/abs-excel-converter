@@ -162,8 +162,7 @@ public class ABSExcel {
         // header column and wrongly entered data in the excel sheet.
         getImportId();
         return !getValue(ABSColumn.IMPORTID).isEmpty() && !getValue(ABSColumn.OBJECTNAAM).isEmpty()
-            && !getValue(ABSColumn.OTLTYPEID).isEmpty() && !getValue(ABSColumn.OBJECTSTATUS).isEmpty()
-            && !getValue(ABSColumn.STATUSX).isEmpty()
+            && !getValue(ABSColumn.OTLTYPEID).isEmpty()
             && !(!getValue(ABSColumn.IMPORTIDPARENTABS).isEmpty() && !getValue(ABSColumn.OCMSIDPARENTABS).isEmpty());
       } catch (NumberFormatException nfe) {
         return false;
