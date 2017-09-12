@@ -216,10 +216,10 @@ public class WriteOperationParser {
       
       // Optional column
       if (!getRow().getValue(ABSColumn.OBJECTSTATUS).isEmpty())
-        operations.add(createAttributeOperation(generateUUID(), nodeId, "objectStatus", getRow().getValue(ABSColumn.OBJECTSTATUS)));
+        operations.add(createAttributeOperation(generateUUID(), nodeId, "status", getRow().getValue(ABSColumn.OBJECTSTATUS)));
       // Optional column
       if (!getRow().getValue(ABSColumn.STATUSX).isEmpty())
-        operations.add(createAttributeOperation(generateUUID(), nodeId, "statusX", getRow().getValue(ABSColumn.STATUSX)));
+        operations.add(createAttributeOperation(generateUUID(), nodeId, "situation", getRow().getValue(ABSColumn.STATUSX)));
       
       // Note: we prefix the OTL type with: 'otl:' to match records in the database
       operations.add(createRelationOperation(generateUUID(), nodeId, "Artefact_isClassifiedAsByLibraryClass_ArtefactLibraryElementReference", "otl:" + getRow().getValue(ABSColumn.OTLTYPEID)));
