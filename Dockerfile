@@ -1,19 +1,17 @@
-FROM java:8
-
-# Install maven
-RUN apt-get update
-RUN apt-get install -y maven
+FROM java:8-alpine
 
 WORKDIR /code
 
-# Prepare by downloading dependencies
 ADD pom.xml /code/pom.xml
-RUN ["mvn", "dependency:resolve"]
-RUN ["mvn", "verify"]
 
 # Adding source, compile and package into a fat jar
 ADD src /code/src
 
-RUN ["mvn", "package", "-DskipTests=true"]
+# Install maven, compile and build the jar
+RUN apk --update --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.6/community add maven && \
+mvn dependency:resolve && \
+mvn verify && \
+mvn package && \
+apk del maven
 
-CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "target/service.jar"]
+CMD ["java", "-jar", "target/service.jar"]

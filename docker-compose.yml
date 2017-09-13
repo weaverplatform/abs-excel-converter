@@ -1,8 +1,7 @@
 version: '2'
 services:
   abs-excel-converter:
-    container_name: abs-excel-converter
-    image: sysunite/abs-excel-converter:0.0.3
+    image: sysunite/abs-excel-converter:0.0.4
     expose:
       - "6567"
     ports:
