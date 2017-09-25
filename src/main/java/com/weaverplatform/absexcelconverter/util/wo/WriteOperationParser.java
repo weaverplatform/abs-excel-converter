@@ -212,7 +212,7 @@ public class WriteOperationParser {
       operations.add(createRelationOperation(generateUUID(), nodeId, "rdf:type", "ILSObject"));
       operations.add(createRelationOperation(generateUUID(), nodeId, "rdf:type", "MaterializedPhysicalObject"));
       
-      operations.add(createAttributeOperation(generateUUID(), nodeId, "hasNameByLiteral", getRow().getValue(ABSColumn.OBJECTNAAM)));
+      operations.add(createAttributeOperation(generateUUID(), nodeId, "sebim:hasNameByLiteral", getRow().getValue(ABSColumn.OBJECTNAAM)));
       
       // Optional column
       if (!getRow().getValue(ABSColumn.OBJECTSTATUS).isEmpty())
