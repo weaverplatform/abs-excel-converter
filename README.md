@@ -1,9 +1,12 @@
-# abs-excel-converter
-This microservice is meant to convert excel sheets in a particular format (see this [issue](http://jira.sysunite.com/browse/RC-77)) to Weaver WriteOperations in JSON format. These WriteOperations can be used to inject the excel structure into a weaver-database.
+# excel2wo-ms
+Since version 0.1.0 this software got renamed and rewritten. Before version 0.1.0 this software was called abs-excel-converter and served a singular purpose.
+It converted an Excel sheet (of static structure) to a set of Weaver write-operations. It was used for a single project, but over time interest grew for this piece of software. More Weaver applications needed some sort of conversion between Excel structures and write-operations. Since version 0.1.0 this software got more generic, using configuration files you can easily define a Excel sheet and how it should map to Weaver write-operations. You could view this readme in it's older state by browsing the 0.0.5 tag.
 
-This is a Maven Java project which exposes a REST API (on a configurable port) to communicate with it. The general concept is to upload an excel file and you get a WriteOperation (batch) returned.
+Relevant JIRA issue: [http://jira.sysunite.com/browse/WS-100](WS-100).
 
-***Version: 0.0.5***
+This is a Maven Java project which exposes a REST API (on a configurable port) to communicate with it. The general concept is to upload an excel file and you get a WriteOperation (batch) returned. To see example configuration files to know how to implement different Excel structures please see EXAMPLE.md.
+
+***Version: 0.1.0***
 
 ### Configuration
 See the **main.properties** file in the **resources** folder and adjust accordingly.
