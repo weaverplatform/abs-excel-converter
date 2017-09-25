@@ -3,7 +3,7 @@ This microservice is meant to convert excel sheets in a particular format (see t
 
 This is a Maven Java project which exposes a REST API (on a configurable port) to communicate with it. The general concept is to upload an excel file and you get a WriteOperation (batch) returned.
 
-***Version: 0.0.1-SNAPSHOT***
+***Version: 0.0.5***
 
 ### Configuration
 See the **main.properties** file in the **resources** folder and adjust accordingly.
